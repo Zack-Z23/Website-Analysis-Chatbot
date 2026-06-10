@@ -1,70 +1,145 @@
-# Getting Started with Create React App
+# AI Website Analyzer Chatbot API
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A FastAPI-powered chatbot that analyzes websites and answers questions about them using a local Ollama LLM (`qwen2.5-coder:14b`).
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Accepts a URL and a natural language question
+- Uses Ollama to analyze the website and generate a conversational response
+- Returns structured, readable answers
+- CORS-enabled for easy frontend integration
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Requirements
 
-### `npm test`
+- Python 3.9+
+- [Ollama](https://ollama.com/) installed and running locally
+- The `qwen2.5-coder:14b` model pulled in Ollama
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/your-repo.git
+   cd your-repo
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Install dependencies**
+   ```bash
+   pip install fastapi uvicorn ollama requests
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Pull the Ollama model**
+   ```bash
+   ollama pull qwen2.5-coder:14b
+   ```
 
-### `npm run eject`
+4. **Start the Ollama server** (if not already running)
+   ```bash
+   ollama serve
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Running the API
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+uvicorn main:app --reload
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The API will be available at `http://localhost:8000`.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## API Endpoints
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### `GET /`
+Health check — returns a welcome message.
 
-### Code Splitting
+**Response:**
+```json
+{ "message": "Welcome to the AI Content Categorization Chatbot API" }
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+### `POST /chat`
+Analyzes a website and answers a question about it.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**Request body:**
+```json
+{
+  "url": "https://example.com",
+  "question": "What does this website sell?"
+}
+```
 
-### Making a Progressive Web App
+| Field      | Type   | Required | Default                                        |
+|------------|--------|----------|------------------------------------------------|
+| `url`      | string |  Yes   | —                                              |
+| `question` | string |  No    | `"Analyze the website and provide information."` |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Response:**
+```json
+{
+  "response": "This website appears to be an e-commerce platform that sells..."
+}
+```
 
-### Advanced Configuration
+**Error responses:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+| Status | Reason                        |
+|--------|-------------------------------|
+| `400`  | URL not provided              |
+| `500`  | Internal server error / model failure |
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Example Usage
 
-### `npm run build` fails to minify
+Using `curl`:
+```bash
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://news.ycombinator.com", "question": "What kind of content is on this site?"}'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Using Python `requests`:
+```python
+import requests
+
+res = requests.post("http://localhost:8000/chat", json={
+    "url": "https://news.ycombinator.com",
+    "question": "What kind of content is on this site?"
+})
+print(res.json()["response"])
+```
+
+---
+
+## Project Structure
+
+```
+.
+├── main.py        # FastAPI app and Ollama integration
+└── README.md
+```
+
+---
+
+## Notes
+
+- The model does **not** fetch or scrape the URL — it reasons about the website based on its training knowledge. For live scraping, consider integrating a tool like `BeautifulSoup` or `playwright` to pass page content into the prompt.
+- Non-ASCII characters are stripped from the model's response to ensure clean output.
+- CORS is currently open (`allow_origins=["*"]`). Restrict this in production.
+
+---
+
+## License
+
+MIT
