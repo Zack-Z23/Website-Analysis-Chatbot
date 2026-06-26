@@ -1,145 +1,74 @@
-# AI Website Analyzer Chatbot API
+# Website Analysis Chatbot
 
-A FastAPI-powered chatbot that analyzes websites and answers questions about them using a local Ollama LLM (`qwen2.5-coder:14b`).
-
----
+A full-stack AI-powered chatbot that analyzes the content of any website and lets you have a natural conversation about it. Enter a URL, and the app fetches and processes the site's content so you can ask questions and get intelligent answers — all through a clean React interface.
 
 ## Features
 
-- Accepts a URL and a natural language question
-- Uses Ollama to analyze the website and generate a conversational response
-- Returns structured, readable answers
-- CORS-enabled for easy frontend integration
+- **URL-based analysis** — paste any website URL to instantly load its content for querying
+- **Conversational interface** — ask follow-up questions in a natural chat format
+- **React frontend** — responsive, fast UI built with Create React App
+- **Python backend** — handles web scraping, content processing, and AI response generation
+- **Full-stack architecture** — clean separation between frontend (React/JS) and backend (Python)
 
----
+## Tech Stack
 
-## Requirements
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React, JavaScript, CSS |
+| Backend | Python |
+| Styling | CSS |
 
-- Python 3.9+
-- [Ollama](https://ollama.com/) installed and running locally
-- The `qwen2.5-coder:14b` model pulled in Ollama
+## Getting Started
 
----
+### Prerequisites
 
-## Installation
+- Node.js (v16+)
+- Python 3.x
+- npm or yarn
 
-1. **Clone the repository**
+### Installation
+
+1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone https://github.com/Zack-Z23/Website-Analysis-Chatbot.git
+   cd Website-Analysis-Chatbot
    ```
 
-2. **Install dependencies**
+2. Install frontend dependencies:
    ```bash
-   pip install fastapi uvicorn ollama requests
+   npm install
    ```
 
-3. **Pull the Ollama model**
+3. Install backend dependencies:
    ```bash
-   ollama pull qwen2.5-coder:14b
+   pip install -r requirements.txt
    ```
 
-4. **Start the Ollama server** (if not already running)
-   ```bash
-   ollama serve
-   ```
+### Running the App
 
----
-
-## Running the API
-
+Start the backend server:
 ```bash
-uvicorn main:app --reload
+python app.py
 ```
 
-The API will be available at `http://localhost:8000`.
-
----
-
-## API Endpoints
-
-### `GET /`
-Health check — returns a welcome message.
-
-**Response:**
-```json
-{ "message": "Welcome to the AI Content Categorization Chatbot API" }
-```
-
----
-
-### `POST /chat`
-Analyzes a website and answers a question about it.
-
-**Request body:**
-```json
-{
-  "url": "https://example.com",
-  "question": "What does this website sell?"
-}
-```
-
-| Field      | Type   | Required | Default                                        |
-|------------|--------|----------|------------------------------------------------|
-| `url`      | string |  Yes   | —                                              |
-| `question` | string |  No    | `"Analyze the website and provide information."` |
-
-**Response:**
-```json
-{
-  "response": "This website appears to be an e-commerce platform that sells..."
-}
-```
-
-**Error responses:**
-
-| Status | Reason                        |
-|--------|-------------------------------|
-| `400`  | URL not provided              |
-| `500`  | Internal server error / model failure |
-
----
-
-## Example Usage
-
-Using `curl`:
+In a separate terminal, start the frontend:
 ```bash
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://news.ycombinator.com", "question": "What kind of content is on this site?"}'
+npm start
 ```
 
-Using Python `requests`:
-```python
-import requests
-
-res = requests.post("http://localhost:8000/chat", json={
-    "url": "https://news.ycombinator.com",
-    "question": "What kind of content is on this site?"
-})
-print(res.json()["response"])
-```
-
----
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
 ```
-.
-├── main.py        # FastAPI app and Ollama integration
+Website-Analysis-Chatbot/
+├── public/          # Static assets
+├── src/             # React frontend source
+├── app.py           # Python backend entry point
+├── package.json
 └── README.md
 ```
 
----
+## Author
 
-## Notes
-
-- The model does **not** fetch or scrape the URL — it reasons about the website based on its training knowledge. For live scraping, consider integrating a tool like `BeautifulSoup` or `playwright` to pass page content into the prompt.
-- Non-ASCII characters are stripped from the model's response to ensure clean output.
-- CORS is currently open (`allow_origins=["*"]`). Restrict this in production.
-
----
-
-## License
-
-MIT
+Zacharias Zachariadis — [GitHub](https://github.com/Zack-Z23)
